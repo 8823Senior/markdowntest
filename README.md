@@ -36,7 +36,18 @@ ModelAndView
 ModelMap  
 
 **html页面**  
-页面大量使用了FreeMarker模板语言来处理参数和页面动态展示，若要改页面则需要对FreeMarker有一定了解
+页面大量使用了FreeMarker模板语言来处理参数和页面动态展示，若要改页面则需要对FreeMarker有一定了解  
+
+```flow
+st=>start: 用户登陆
+op=>operation: 登陆操作
+cond=>condition: 登陆成功 Yes or No?
+e=>end: 进入后台
+
+st->op->cond
+cond(yes)->e
+cond(no)->op
+```
 
 ### 用户端请求接口顺序
 * 以域名 kf.haoyd.com 为例
