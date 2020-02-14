@@ -50,15 +50,15 @@ ModelMap
 #### <span id="forJavaDeveloper_manual_addWebSite">新增一个接入网站需要做哪些操作</span>
 1. 登录管理员账号->系统管理  
 1. **创建组织机构**  
- + 菜单：用户和组->组织机构，在机构树中，在“组织机构”这个根节点下创建一个机构（即部门）  
- + 特别注意 ***要选择正确的上级机构（无特殊要求则都选择跟节点） 以及 勾选启用技能组***
+  + 菜单：用户和组->组织机构，在机构树中，在“组织机构”这个根节点下创建一个机构（即部门）  
+  + 特别注意 ***要选择正确的上级机构（无特殊要求则都选择跟节点） 以及 勾选启用技能组***
 1. **创建接入网站与技能组设置**  
- + 菜单 客服接入->网站列表，**创建新网站** ***(网站只是一个区分不同接入方的概念，不用填具体网站)***  
- + 点击网站列表中的**接入**按钮，去修改各自的接入配置  
+  + 菜单 客服接入->网站列表，**创建新网站** ***(网站只是一个区分不同接入方的概念，不用填具体网站)***  
+  + 点击网站列表中的**接入**按钮，去修改各自的接入配置  
    主要修改技能组：
-    + 点击接入，会打开新页面  
-    + 点击客服信息，会打开新页面  
-    + 找到 9、启用技能组模式，勾选“启用”，勾选“绑定单一技能组”，在“a、
+     + 点击接入，会打开新页面  
+     + 点击客服信息，会打开新页面  
+     + 找到 9、启用技能组模式，勾选“启用”，勾选“绑定单一技能组”，在“a、
     技能组”下拉选项中，选择刚才创建的机构  
 1. 菜单 用户和组->用户账号，创建新用户，按页面输入用户信息，**一定要勾选多媒体坐席**，提交保存  
 1. 菜单 用户和组->系统角色，如果没有则 新建角色（普通客服角色），普通角色授权：只需要**坐席对话**即可  
@@ -68,8 +68,8 @@ ModelMap
 *新增一个连锁药店，按照现有的设计相当于要增加一个 接入网站和技能组，对应的也要创建一个组织机构和坐席用户*  
 1. 在 [新增一个接入网站需要做哪些操作](#forJavaDeveloper_manual_addWebSite) 的基础上执行下面的步骤
 1. **将客服配置增量初始化到egodrug库**  
- + 在上面第一步时，可以先不创建坐席用户，待存储过程执行完再创建坐席用户，并关联到**角色**和**组织机构**中
- + 在‘客服系统数据库 **cosinee**’ 执行存储过程`call cosinee.pro_init_customer_chat_rel();`增量初始化连锁药店配置到表`egodrug.sh_chain_drugstore_chat_config_relation`  
+  + 在上面第一步时，可以先不创建坐席用户，待存储过程执行完再创建坐席用户，并关联到**角色**和**组织机构**中
+  + 在‘客服系统数据库 **cosinee**’ 执行存储过程`call cosinee.pro_init_customer_chat_rel();`增量初始化连锁药店配置到表`egodrug.sh_chain_drugstore_chat_config_relation`  
 
 #### 客服设置相关
 管理员账号登录，可以看到左侧菜单栏有一个菜单“客服设置”  
@@ -99,25 +99,25 @@ e.g. ws://kf.haoyd.com/socket.io/?userid=b968af729ef7a540e877d14c56f7e3fb&orgi=c
 
 1. cosinee数据库表cosinee.uk_agentuser，增加字段，并增加DTO的字段
 1. **第一次接口修改**
- + 接口 /im/text/{appid}（按接入标识分配坐席）和 /im/textbyarea（按地区分配坐席）
-    + 入参对象 **OuterUserInfo** 中增加字段
-    + 通过 **ModelAndView#addObject(String, Object)** 将字段值传递给下一个页面，可参考
-    ```javascript
-      地区名称
-      view.addObject("areaname", outerUserInfo.getAreaname());
-    ```
+   + 接口 /im/text/{appid}（按接入标识分配坐席）和 /im/textbyarea（按地区分配坐席）
+     + 入参对象 **OuterUserInfo** 中增加字段
+     + 通过 **ModelAndView#addObject(String, Object)** 将字段值传递给下一个页面，可参考
+      ```javascript
+        地区名称
+        view.addObject("areaname", outerUserInfo.getAreaname());
+      ```
 1. **第一个页面修改**
- + 请求上面的接口后会跳转到页面 **text.html**，需要在该页面再次组装请求参数，在发起请求前组装请求参数，关键代码
- ```javascript
-    请求接口 /im/index
-    ukefu.openChatDialog();
- ```
+  + 请求上面的接口后会跳转到页面 **text.html**，需要在该页面再次组装请求参数，在发起请求前组装请求参数，关键代码
+   ```javascript
+      请求接口 /im/index
+      ukefu.openChatDialog();
+   ```
 1. **第二次接口修改**
- + 上一个页面会重新组装请求参数并请求接口 /im/index，因此
+  + 上一个页面会重新组装请求参数并请求接口 /im/index，因此
     + 入参对象 **Contacts** 增加扩展字段即可
 1. **第二个页面修改**
- + 由于是通过WebSocket将用户信息再传给服务端，才保存，所以需要修改WebSocket连接时参数
- ```javascript
+  + 由于是通过WebSocket将用户信息再传给服务端，才保存，所以需要修改WebSocket连接时参数
+  ```javascript
    socket.on('connect',function(){
    <#if contacts?? && contacts.name??>
        	socket.emit('new', {
@@ -132,9 +132,8 @@ e.g. ws://kf.haoyd.com/socket.io/?userid=b968af729ef7a540e877d14c56f7e3fb&orgi=c
    		});
    </#if>
    })
- ```  
+  ```  
 
-  
 ### <span id="forJavaDeveloper_db">主要数据库表及关系</span>
 **用户与角色**  
 uk_role 角色  
@@ -196,8 +195,8 @@ https://kf.haoyd.com/im/text/{appid}.html
 
 #### 响应
 跳转到新页面，根据是否有在线坐席可以分配会呈现不同页面  
-+ 与坐席聊天页面（有在线坐席可以分配）
-+ 留言页面（无在线坐席）
+  + 与坐席聊天页面（有在线坐席可以分配）
+  + 留言页面（无在线坐席）
 
 ### 根据地区分配客服
 #### 接口地址
@@ -217,4 +216,4 @@ https://kf.haoyd.com/im/textbyarea.html
 
 #### 响应
 跳转到新页面，若该地区没有对应坐席则提示无匹配坐席  
-+ 与坐席聊天页面
+  + 与坐席聊天页面
