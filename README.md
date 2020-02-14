@@ -49,10 +49,10 @@ ModelMap
 默认账号与密码： admin/admin1234  
 #### <span id="forJavaDeveloper_manual_addWebSite">新增一个接入网站需要做哪些操作</span>
 1. 登录管理员账号->系统管理  
-1. **创建组织机构**  
+2. **创建组织机构**  
   + 菜单：用户和组->组织机构，在机构树中，在“组织机构”这个根节点下创建一个机构（即部门）  
   + 特别注意 ***要选择正确的上级机构（无特殊要求则都选择跟节点） 以及 勾选启用技能组***
-1. **创建接入网站与技能组设置**  
+3. **创建接入网站与技能组设置**  
   + 菜单 客服接入->网站列表，**创建新网站** ***(网站只是一个区分不同接入方的概念，不用填具体网站)***  
   + 点击网站列表中的**接入**按钮，去修改各自的接入配置  
    主要修改技能组：
@@ -60,8 +60,8 @@ ModelMap
      + 点击客服信息，会打开新页面  
      + 找到 9、启用技能组模式，勾选“启用”，勾选“绑定单一技能组”，在“a、
     技能组”下拉选项中，选择刚才创建的机构  
-1. 菜单 用户和组->用户账号，创建新用户，按页面输入用户信息，**一定要勾选多媒体坐席**，提交保存  
-1. 菜单 用户和组->系统角色，如果没有则 新建角色（普通客服角色），普通角色授权：只需要**坐席对话**即可  
+4. 菜单 用户和组->用户账号，创建新用户，按页面输入用户信息，**一定要勾选多媒体坐席**，提交保存  
+5. 菜单 用户和组->系统角色，如果没有则 新建角色（普通客服角色），普通角色授权：只需要**坐席对话**即可  
 通过**添加用户到角色**按钮，将之前创建的角色添加到该角色中  
 
 #### 新增一个连锁药店后需要做哪些操作
@@ -75,7 +75,6 @@ ModelMap
 管理员账号登录，可以看到左侧菜单栏有一个菜单“客服设置”  
 可以修改 对话设置等内容
 
-
 ### <span id="forJavaDeveloper_customerApiOrder">访客端请求主要逻辑&接口顺序</span>
 * 以域名 kf.haoyd.com 为例
 
@@ -84,13 +83,13 @@ appid表示接入网站标识，与技能组关联，与组织机构关联，影
 会跳转到 **/apps/im/text.html** 页面，该页面主要是处理上一个请求没有没有传入**userId**用户ID时，会根据浏览器指纹计算生成一个**userId**  
 e.g. http://kf.haoyd.com/im/text/154wmf.html  
 
-1. 在text.html页面上发起请求 /im/index.html  
+2. 在text.html页面上发起请求 /im/index.html  
 该请求后端主要处理逻辑：  
 判断该接入网站 **appid**，是否有效？是否有在线坐席？  
 然后根据请求来源跳转 **网页web端页面 index.html**，**或 移动端页面mobile.html**  
 e.g. http://kf.haoyd.com/im/index.html?appid=154wmf&orgi=cskefu&client=ce85b1cc61ac4530909c5cf87a0f6b7a&type=text&skill=2c9280866f840b0c016f84125d79006d&userid=b968af729ef7a540e877d14c56f7e3fb&sessionid=fee1fc61-b2f1-4119-ae37-e33a7e30d668&t=1579057249168
 
-1. 访客端通过 websocket连接请求 ws://kf.haoyd.com/socket.io/  
+3. 访客端通过 websocket连接请求 ws://kf.haoyd.com/socket.io/  
 主要逻辑：分配坐席，发送  
 e.g. ws://kf.haoyd.com/socket.io/?userid=b968af729ef7a540e877d14c56f7e3fb&orgi=cskefu&session=fee1fc61-b2f1-4119-ae37-e33a7e30d668&appid=154wmf&osname=&browser=&skill=2c9280866f840b0c016f84125d79006d&nickname=Guest_%4019fwrt&isInvite=&EIO=3&transport=websocket
 
@@ -98,7 +97,7 @@ e.g. ws://kf.haoyd.com/socket.io/?userid=b968af729ef7a540e877d14c56f7e3fb&orgi=c
 > 要扩展访客信息，需要做以下修改
 
 1. cosinee数据库表cosinee.uk_agentuser，增加字段，并增加DTO的字段
-1. **第一次接口修改**
+2. **第一次接口修改**
    + 接口 /im/text/{appid}（按接入标识分配坐席）和 /im/textbyarea（按地区分配坐席）
      + 入参对象 **OuterUserInfo** 中增加字段
      + 通过 **ModelAndView#addObject(String, Object)** 将字段值传递给下一个页面，可参考
@@ -106,16 +105,16 @@ e.g. ws://kf.haoyd.com/socket.io/?userid=b968af729ef7a540e877d14c56f7e3fb&orgi=c
         地区名称
         view.addObject("areaname", outerUserInfo.getAreaname());
       ```
-1. **第一个页面修改**
+3. **第一个页面修改**
   + 请求上面的接口后会跳转到页面 **text.html**，需要在该页面再次组装请求参数，在发起请求前组装请求参数，关键代码
    ```javascript
       请求接口 /im/index
       ukefu.openChatDialog();
    ```
-1. **第二次接口修改**
+4. **第二次接口修改**
   + 上一个页面会重新组装请求参数并请求接口 /im/index，因此
     + 入参对象 **Contacts** 增加扩展字段即可
-1. **第二个页面修改**
+5. **第二个页面修改**
   + 由于是通过WebSocket将用户信息再传给服务端，才保存，所以需要修改WebSocket连接时参数
   ```javascript
    socket.on('connect',function(){
